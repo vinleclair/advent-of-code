@@ -11,13 +11,8 @@ public class Solution : ISolution
         {
             if (IsReportSafe(report))
                 safeReportsCount++;
-            else
-            {
-                if (report.Select((_, j) => GetNewReport(report, j)).Any(IsReportSafe))
-                {
-                    safeReportsCount++;
-                }
-            }
+            else if (report.Select((_, j) => GetNewReport(report, j)).Any(IsReportSafe))
+                safeReportsCount++;
         }
 
         return safeReportsCount;
@@ -48,6 +43,7 @@ public class Solution : ISolution
         newReport.RemoveAt(index);
         return newReport;
     }
-    
-    private static IEnumerable<List<int>> ParseInput(string input) => input.Split("\n").Select(line => line.Split(" ")).Select(split => split.Select(int.Parse).ToList());
+
+    private static IEnumerable<List<int>> ParseInput(string input) => input.Split("\n").Select(line => line.Split(" "))
+        .Select(split => split.Select(int.Parse).ToList());
 }
