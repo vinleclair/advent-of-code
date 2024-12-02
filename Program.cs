@@ -21,6 +21,10 @@ var action =
         var tsolutionsSelected = tsolutions.Where(tsolution =>
             SolutionExtensions.Day(tsolution) == day);
         return () => Runner.RunAll(GetSolutions(tsolutionsSelected.ToArray()));
+    }) ??
+    Command(args, Args("all"), m =>
+    {
+        return () => Runner.RunAll(GetSolutions(tsolutions));
     });
 
 action?.Invoke();

@@ -17,6 +17,7 @@ public static class Runner
     private static void RunSolution(ISolution solution)
     {
         var workingDir = solution.WorkingDir();
+        WriteLine();
         WriteLine(ConsoleColor.White, $"{solution.DayName()}");
         var file = Path.Combine(workingDir, "input.txt");
         var input = GetNormalizedInput(file);
