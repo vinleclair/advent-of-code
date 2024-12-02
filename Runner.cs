@@ -17,8 +17,7 @@ public static class Runner
     private static void RunSolution(ISolution solution)
     {
         var workingDir = solution.WorkingDir();
-        Write(ConsoleColor.White, $"{solution.DayName()}");
-        WriteLine();
+        WriteLine(ConsoleColor.White, $"{solution.DayName()}");
         var file = Path.Combine(workingDir, "input.txt");
         var input = GetNormalizedInput(file);
         var stopwatch = Stopwatch.StartNew();
@@ -45,10 +44,7 @@ public static class Runner
             RunSolution(solution);
     }
 
-    private static void WriteLine(ConsoleColor color = ConsoleColor.Gray, string text = "")
-    {
-        Write(color, text + "\n");
-    }
+    private static void WriteLine(ConsoleColor color = ConsoleColor.Gray, string text = "") => Write(color, text + "\n");
 
     private static void Write(ConsoleColor color = ConsoleColor.Gray, string text = "")
     {
