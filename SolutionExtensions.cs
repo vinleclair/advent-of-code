@@ -12,6 +12,8 @@ public static class SolutionExtensions
         }
     }
     
+    public static string DayName(this ISolution solution) => $"Day {solution.Day()}";
+
     public static int Day(Type t) => int.Parse(t.FullName?.Split('.')[2][3..]!);
     
     private static int Day(this ISolution solution) => Day(solution.GetType());
