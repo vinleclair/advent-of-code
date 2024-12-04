@@ -37,12 +37,11 @@ public partial class Solution : ISolution
 
         return result;
     }
-
-    private static string[] ParseInput(string input) => input.Split("\n").ToArray();
     
     [GeneratedRegex(@"mul\((\d{1,3}),(\d{1,3})\)")]
     private static partial Regex MulRegex();
 
     [GeneratedRegex(@"(mul\((\d{1,3}),(\d{1,3})\))|(don't\(\))|(do\(\))")]
     private static partial Regex MulDoDontRegex();
+    private static string[] ParseInput(string input) => input.Split("\n").ToArray();
 }
