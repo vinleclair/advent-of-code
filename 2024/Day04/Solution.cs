@@ -36,7 +36,7 @@ public class Solution : ISolution
     }
 
     private static bool Match(Map map, Vector2 coordinates, Vector2 direction, string pattern) =>
-        pattern.Select((_, i) => map.GetValueOrDefault(coordinates + i * direction))
+        pattern.Select((_, index) => map.GetValueOrDefault(coordinates + index * direction))
             .ToArray() is var chars &&
         chars.SequenceEqual(pattern) || chars.SequenceEqual(pattern.Reverse());
 
