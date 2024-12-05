@@ -10,7 +10,7 @@ public class Solution : ISolution
     private readonly Vector2 _down = new(0, -1);
     private readonly Vector2 _left = new(-1, 0);
     private readonly Vector2 _right = new(1, 0);
-    
+
     public object PartOne(string input)
     {
         var map = ParseInput(input);

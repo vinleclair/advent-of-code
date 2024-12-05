@@ -45,7 +45,8 @@ public static class Runner
             RunSolution(solution);
     }
 
-    private static void WriteLine(ConsoleColor color = ConsoleColor.Gray, string text = "") => Write(color, text + "\n");
+    private static void WriteLine(ConsoleColor color = ConsoleColor.Gray, string text = "") =>
+        Write(color, text + "\n");
 
     private static void Write(ConsoleColor color = ConsoleColor.Gray, string text = "")
     {
