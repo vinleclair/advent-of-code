@@ -19,14 +19,22 @@ public class Solution : ISolution
     {
         var (map, start) = ParseInput(input);
 
-        return Patrol(map, start).steps.Where(s => map[s] == '.').Count(step => Patrol(map, start, step).isLoop);
+        var loopCount = 0;
+        Parallel.ForEach(Patrol(map, start).steps.Where(s => map[s] == '.'), step =>
+            {
+                if (Patrol(map, start, step).isLoop)
+                    loopCount++;
+            }
+        );
+        return loopCount;
     }
 
-    private (IEnumerable<Vector2> steps, bool isLoop) Patrol(Map map, Vector2 position, Vector2? positionToUpdate = null)
+    private (IEnumerable<Vector2> steps, bool isLoop) Patrol(Map map, Vector2 position,
+        Vector2? positionToUpdate = null)
     {
         var steps = new HashSet<(Vector2 position, Vector2 direction)>();
         var direction = _forward;
-        
+
         while (map.ContainsKey(position) && !steps.Contains((position, direction)))
         {
             steps.Add((position, direction));
