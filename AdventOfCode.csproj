@@ -14,6 +14,7 @@
       <None Update="2024\Day02\input.txt">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
+      <None Remove=".gitignore" />
     </ItemGroup>
 
 </Project>
