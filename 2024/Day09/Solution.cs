@@ -1,5 +1,6 @@
 ﻿namespace AdventOfCode._2024.Day09;
 
+//TODO Optimize this bad boy by using linked list
 public class Solution : ISolution
 {
     public object PartOne(string input)

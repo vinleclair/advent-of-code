@@ -35,7 +35,7 @@ public class Solution : ISolution
         return trails.Count();
     }
 
-    private static List<Vector2> HikeTrails(Map map, Vector2 trailhead, bool isRating = false)
+    private static IEnumerable<Vector2> HikeTrails(Map map, Vector2 trailhead, bool isRating = false)
     {
         var queue = new Queue<Vector2>();
         queue.Enqueue(trailhead);
@@ -54,7 +54,7 @@ public class Solution : ISolution
                 queue.Enqueue(position + direction);
         }
 
-        return visited.Where(pos => map.GetValueOrDefault(pos) == 9).ToList();
+        return visited.Where(pos => map.GetValueOrDefault(pos) == 9);
     }
 
     private static Map ParseInput(string input) => input.Split("\n")
