@@ -7,12 +7,13 @@ public class Solution : ISolution
 
     private static Dictionary<long, long> Blink(Dictionary<long, long> stones, int blinkCount)
     {
+        var updates = new Dictionary<long, long>();
+        
         for (var b = 1; b <= blinkCount; b++)
         {
-            var updates = new Dictionary<long, long>();
-            var stoneKeys = stones.Keys.ToList();
+            updates.Clear();
 
-            foreach (var key in stoneKeys)
+            foreach (var key in stones.Keys.ToList())
             {
                 var count = stones[key];
                 if (count <= 0) continue;
