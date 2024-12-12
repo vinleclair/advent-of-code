@@ -400,4 +400,4 @@ FodyWeavers.xsd
 .idea/
 
 # Advent of Code input
-**/**/input.txt
+[Ii]nput.txt
