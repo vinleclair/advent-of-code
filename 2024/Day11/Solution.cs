@@ -8,7 +8,7 @@ public class Solution : ISolution
     private static Dictionary<long, long> Blink(Dictionary<long, long> stones, int blinkCount)
     {
         var updates = new Dictionary<long, long>();
-        
+
         for (var b = 1; b <= blinkCount; b++)
         {
             updates.Clear();

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Immutable;
-using System.Drawing;
 using System.Numerics;
 using Map = System.Collections.Immutable.ImmutableDictionary<System.Numerics.Vector2, int>;
 

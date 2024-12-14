@@ -6,7 +6,7 @@ public class Solution : ISolution
     public object PartOne(string input)
     {
         var blocks = GetBlocks(input);
-        
+
         var array = blocks.SelectMany(b => b).ToList();
 
         /*var length = array.Count;
@@ -35,7 +35,7 @@ public class Solution : ISolution
             array[array.IndexOf(".")] = array[i];
             array[array.LastIndexOf(array[i])] = ".";
         }
-        
+
         long checksum = 0;
 
         foreach (var (c, i) in array.Select((b, i) => (b, i)))
@@ -115,7 +115,7 @@ public class Solution : ISolution
                 blocks.FirstOrDefault(b => b.Count(f => f == ".") >= blocks[i].Count && blocks.IndexOf(b) < i);
 
             if (blockToUpdate == null) continue;
-            
+
             var dotIndices = blockToUpdate
                 .Select((value, index) => (value, index))
                 .Where(x => x.value == ".")

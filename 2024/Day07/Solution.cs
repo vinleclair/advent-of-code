@@ -19,7 +19,7 @@ public class Solution : ISolution
         select equation.Key;
 
     private static bool IsEquationTrue(long target, List<Func<long, long, long>> operators, long acc,
-        long[] testNumbers) => testNumbers.Length == 0 || acc > target 
+        long[] testNumbers) => testNumbers.Length == 0 || acc > target
         ? target == acc
         : operators.Any(op => IsEquationTrue(target, operators, op(acc, testNumbers[0]), testNumbers[1..]));
 

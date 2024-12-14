@@ -30,11 +30,11 @@ public partial class Solution : ISolution
         return pushA * CostA + pushB * CostB;
     }
 
+    private static long Determinant(Vector2Long v1, Vector2Long v2) => v1.X * v2.Y - v1.Y * v2.X;
+    
     private static IEnumerable<Machine> ConversionError(IEnumerable<Machine> machines) => machines.Select(machine =>
         (machine.A, machine.B,
             new Vector2Long(machine.Prize.X + UnitConversionError, machine.Prize.Y + UnitConversionError)));
-
-    private static long Determinant(Vector2Long v1, Vector2Long v2) => v1.X * v2.Y - v1.Y * v2.X;
 
     private static IEnumerable<Machine> ParseInput(string input) => input.Split("\n\n").Select(block =>
         OneOrMoreDigits().Matches(block)
