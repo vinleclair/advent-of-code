@@ -9,8 +9,8 @@ public class Solution : ISolution
 
         var array = blocks.SelectMany(b => b).ToList();
 
-        /*var length = array.Count;
-        int dotIndex = 0;
+        var length = array.Count;
+        var dotIndex = 0;
 
         for (var i = length - 1; i >= 0; i--)
         {
@@ -29,11 +29,6 @@ public class Solution : ISolution
             // Swap the current number with the dot
             array[dotIndex] = array[i];
             array[i] = ".";
-        }*/
-        for (var i = array.Count - 1; i >= 0; i--)
-        {
-            array[array.IndexOf(".")] = array[i];
-            array[array.LastIndexOf(array[i])] = ".";
         }
 
         long checksum = 0;
@@ -51,39 +46,29 @@ public class Solution : ISolution
     {
         var blocks = GetBlocks(input);
 
-        /*for (var i = blocks.Count - 1; i >= 0; i--)
+        for (var i = blocks.Count - 1; i >= 0; i--)
         {
             // Quick check if current block is all dots
-            bool allDots = true;
-            foreach (var item in blocks[i])
-            {
-                if (item != ".")
-                {
-                    allDots = false;
-                    break;
-                }
-            }
+            var allDots = blocks[i].All(item => item == ".");
             if (allDots) continue;
 
             // Find block to update
             List<string> blockToUpdate = null;
-            int targetIndex = -1;
-            int currentBlockCount = blocks[i].Count;
-            string valueToMove = blocks[i][0];
+            var targetIndex = -1;
+            var currentBlockCount = blocks[i].Count;
+            var valueToMove = blocks[i][0];
 
             // Find first eligible block from top
             for (var j = 0; j < i; j++)
             {
-                int dotCount = 0;
+                var dotCount = 0;
                 foreach (var item in blocks[j])
                 {
                     if (item == ".") dotCount++;
-                    if (dotCount >= currentBlockCount)
-                    {
-                        blockToUpdate = blocks[j];
-                        targetIndex = j;
-                        break;
-                    }
+                    if (dotCount < currentBlockCount) continue;
+                    blockToUpdate = blocks[j];
+                    targetIndex = j;
+                    break;
                 }
                 if (blockToUpdate != null) break;
             }
@@ -91,14 +76,12 @@ public class Solution : ISolution
             if (blockToUpdate == null) continue;
 
             // Fill dots directly
-            int filled = 0;
+            var filled = 0;
             for (var j = 0; j < blockToUpdate.Count && filled < currentBlockCount; j++)
             {
-                if (blockToUpdate[j] == ".")
-                {
-                    blocks[targetIndex][j] = valueToMove;
-                    filled++;
-                }
+                if (blockToUpdate[j] != ".") continue;
+                blocks[targetIndex][j] = valueToMove;
+                filled++;
             }
 
             // Replace current block with dots
@@ -106,27 +89,6 @@ public class Solution : ISolution
             {
                 blocks[i][j] = ".";
             }
-        }*/
-        for (var i = blocks.Count - 1; i >= 0; i--)
-        {
-            if (blocks[i].All(b => b == ".")) continue;
-
-            var blockToUpdate =
-                blocks.FirstOrDefault(b => b.Count(f => f == ".") >= blocks[i].Count && blocks.IndexOf(b) < i);
-
-            if (blockToUpdate == null) continue;
-
-            var dotIndices = blockToUpdate
-                .Select((value, index) => (value, index))
-                .Where(x => x.value == ".")
-                .Select(x => x.index)
-                .Take(blocks[i].Count)
-                .ToList();
-
-            foreach (var t in dotIndices)
-                blockToUpdate[t] = blocks[i][0];
-
-            blocks[i] = blocks[i].Select(_ => ".").ToList();
         }
 
         long checksum = 0;
