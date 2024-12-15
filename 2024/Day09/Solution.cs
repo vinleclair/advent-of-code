@@ -53,7 +53,7 @@ public class Solution : ISolution
             if (allDots) continue;
 
             // Find block to update
-            List<string> blockToUpdate = null;
+            List<string> blockToUpdate = null!;
             var targetIndex = -1;
             var currentBlockCount = blocks[i].Count;
             var valueToMove = blocks[i][0];
