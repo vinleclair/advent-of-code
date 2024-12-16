@@ -1,5 +1,6 @@
-﻿using System.Numerics;
-using Map = System.Collections.Generic.Dictionary<System.Numerics.Vector2, char>;
+﻿using System.Collections.Immutable;
+using System.Numerics;
+using Map = System.Collections.Immutable.ImmutableDictionary<System.Numerics.Vector2, char>;
 
 namespace AdventOfCode._2024.Day15;
 
@@ -23,40 +24,75 @@ public class Solution : ISolution
 
     public object PartTwo(string input)
     {
-        //TODO Get this working properly
-        return 0;
+        var (map, robot, steps) = ParseInput(ScaleInput(input));
+
+        foreach (var step in steps)
+            if (CanTakeStep(ref map, robot, step))
+                robot += step;
+
+        return GetGpsCoordinatesSum(map);
     }
 
     private static bool CanTakeStep(ref Map map, Vector2 robot, Vector2 step)
     {
-        if (map[robot + step] == '.')
-            return true;
-
-        var boxes = GetBoxes(map, [], robot, step);
-
-        if (boxes.Count == 0)
-            return false;
-
-        map[boxes[0]] = '.';
-        boxes.RemoveAt(0);
-        foreach (var box in boxes)
-            map[box] = 'O';
-
-        return true;
-    }
-
-    private static List<Vector2> GetBoxes(Map map, List<Vector2> boxes, Vector2 robot, Vector2 step)
-    {
         while (true)
         {
-            if (map[robot + step] == '#')
+            var originalMap= map;
+
+            switch (map[robot])
             {
-                return [];
+                case '.':
+                    return true;
+                case 'O':
+                case '@':
+                {
+                    if (CanTakeStep(ref map, robot + step, step))
+                    {
+                        map = map.SetItem(robot + step, map[robot])
+                            .SetItem(robot, '.');
+                        return true;
+                    }
+
+                    break;
+                }
+                case ']':
+                    robot += Left;
+                    continue;
+                case '[' when step == Left:
+                {
+                    if (CanTakeStep(ref map, robot + Left, step))
+                    {
+                        map = map.SetItem(robot + Left, '[')
+                            .SetItem(robot, ']')
+                            .SetItem(robot + Right, '.');
+                        return true;
+                    }
+
+                    break;
+                }
+                case '[' when step == Right:
+                {
+                    if (CanTakeStep(ref map, robot + 2 * Right, step))
+                    {
+                        map = map.SetItem(robot, '.')
+                            .SetItem(robot + Right, '[')
+                            .SetItem(robot + 2 * Right, ']');
+                        return true;
+                    }
+
+                    break;
+                }
+                case '[' when CanTakeStep(ref map, robot + step, step) &&
+                              CanTakeStep(ref map, robot + Right + step, step):
+                    map = map.SetItem(robot, '.')
+                        .SetItem(robot + Right, '.')
+                        .SetItem(robot + step, '[')
+                        .SetItem(robot + step + Right, ']');
+                    return true;
             }
 
-            boxes.Add(robot + step);
-            if (map[robot + step] == '.') return boxes;
-            robot += step;
+            map = originalMap;
+            return false;
         }
     }
 
@@ -75,14 +111,11 @@ public class Solution : ISolution
                 line.Select((c, x) =>
                 {
                     if (c == '@')
-                    {
                         robot = new Vector2(x, y);
-                        c = '.';
-                    }
 
                     return new KeyValuePair<Vector2, char>(new Vector2(x, y), c);
                 }))
-            .ToDictionary();
+            .ToImmutableDictionary();
 
         var steps = blocks[1].ReplaceLineEndings(string.Empty).Select(c =>
             c switch
