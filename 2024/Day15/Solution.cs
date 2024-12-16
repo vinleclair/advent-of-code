@@ -37,7 +37,7 @@ public class Solution : ISolution
     {
         while (true)
         {
-            var originalMap= map;
+            var originalMap = map;
 
             switch (map[robot])
             {
@@ -106,7 +106,7 @@ public class Solution : ISolution
     {
         var blocks = input.Split("\n\n");
         var robot = new Vector2();
-        var map = input.Split("\n")
+        var map = blocks[0].Split("\n")
             .SelectMany((line, y) =>
                 line.Select((c, x) =>
                 {
