@@ -29,7 +29,19 @@ public partial class Solution : ISolution
 
     public object PartTwo(string input)
     {
-        throw new NotImplementedException();
+        var (_, program) = ParseInput(input);
+        var computer = new Computer();
+
+        for (var length = 1; length <= program.Length; length++)
+        {
+            while (Run(computer, program) != string.Join(',', program.Skip(program.Length - length)))
+                computer.A++;
+
+            if (length < program.Length)
+                computer.A = (computer.A - 1) << 3;
+        }
+
+        return computer.A;
     }
 
     private static string Run(Computer computer, long[] program)
@@ -56,7 +68,6 @@ public partial class Solution : ISolution
             0 or 1 or 2 or 3 => operand, 4 => computer.A, 5 => computer.B, 6 => computer.C, _ => operand
         };
     }
-
 
     private static (Computer computer, long[] program) ParseInput(string input) =>
         input.Split("\n\n").Select(ParseNums).ToArray() is var blocks
