@@ -24,7 +24,7 @@ public partial class Solution : ISolution
     {
         var (computer, program) = ParseInput(input);
 
-        return Run(computer, program);
+        return string.Join(',', Run(computer, program));
     }
 
     public object PartTwo(string input)
@@ -34,7 +34,7 @@ public partial class Solution : ISolution
 
         for (var length = 1; length <= program.Length; length++)
         {
-            while (Run(computer, program) != string.Join(',', program.Skip(program.Length - length)))
+            while (!Run(computer, program).SequenceEqual(program[^length..]))
                 computer.A++;
 
             if (length < program.Length)
@@ -44,7 +44,7 @@ public partial class Solution : ISolution
         return computer.A;
     }
 
-    private static string Run(Computer computer, long[] program)
+    private static long[] Run(Computer computer, long[] program)
     {
         var output = new List<long>();
 
@@ -61,7 +61,7 @@ public partial class Solution : ISolution
                 case (Opcode.@out, var op): output.Add(Combo(op) % 8); break;
             }
 
-        return string.Join(',', output);
+        return output.ToArray();
 
         long Combo(long operand) => operand switch
         {
