@@ -13,23 +13,7 @@ public partial class Solution : ISolution
 
     public object PartOne(string input) => Dijkstra(ParseInput(input).Take(1024)) ?? int.MinValue;
 
-    public object PartTwo(string input)
-    {
-        var bytes = ParseInput(input).ToArray();
-        
-        var (low, high) = (0, bytes.Length);
-        
-        while (low < high - 1) {
-            var mid = (low + high) / 2;
-            if (Dijkstra(bytes.Take(mid)) == null) {
-                high = mid;
-            } else {
-                low = mid;
-            }
-        }
-
-        return bytes[low];
-    }
+    public object PartTwo(string input) => FirstCutOff(ParseInput(input).ToArray());
 
     private static int? Dijkstra(IEnumerable<Vector2> bytes)
     {
@@ -47,16 +31,30 @@ public partial class Solution : ISolution
             foreach (var direction in new[] { Up, Down, Left, Right })
             {
                 var newPosition = position + direction;
-                if (!corrupted.Contains(newPosition) &&
-                    newPosition is { X: >= 0 and <= Size, Y: >= 0 and <= Size })
-                {
-                    priorityQueue.Enqueue(newPosition, distance + 1);
-                    corrupted.Add(newPosition);
-                }
+                if (corrupted.Contains(newPosition) ||
+                    newPosition is not { X: >= 0 and <= Size, Y: >= 0 and <= Size }) continue;
+                priorityQueue.Enqueue(newPosition, distance + 1);
+                corrupted.Add(newPosition);
             }
         }
 
         return null;
+    }
+
+    private static Vector2 FirstCutOff(Vector2[] bytes)
+    {
+        var (low, high) = (0, bytes.Length);
+        
+        while (low < high - 1) {
+            var mid = (low + high) / 2;
+            if (Dijkstra(bytes.Take(mid)) == null) {
+                high = mid;
+            } else {
+                low = mid;
+            }
+        }
+
+        return bytes[low];
     }
 
     private static IEnumerable<Vector2> ParseInput(string input) => input.Split("\n")
