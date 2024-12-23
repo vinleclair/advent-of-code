@@ -49,6 +49,7 @@ public class Solution : ISolution
         var numpadMap = GetPadMap(Numpad);
         var dirpadMap = GetPadMap(Dirpad);
         input = "029A\n980A\n179A\n456A\n379A";
+
         
         var total = 0;
         foreach (var keys in input.Split("\n"))
@@ -70,7 +71,7 @@ public class Solution : ISolution
         return total;
     }
 
-    private List<string> BuildKeySequence(string keys, int index, char previousKey, string currentPath,
+    private static List<string> BuildKeySequence(string keys, int index, char previousKey, string currentPath,
         List<string> result, Dictionary<(char, char), List<string>> keypad)
     {
         if (index == keys.Length)
@@ -168,8 +169,4 @@ public class Solution : ISolution
 
         return shortestPaths;
     }
-
-    private static Map ParseKeypad(string keypad) => keypad.Split("\n")
-        .SelectMany((line, y) => line.Select((ch, x) => new KeyValuePair<Vector2, char>(new Vector2(x, y), ch)))
-        .ToImmutableDictionary();
 }
