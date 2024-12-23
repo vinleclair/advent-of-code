@@ -1,7 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.Numerics;
 using Map = System.Collections.Immutable.ImmutableDictionary<System.Numerics.Vector2, char>;
-using Cache = System.Collections.Concurrent.ConcurrentDictionary<(string, int), int>;
+using Cache = System.Collections.Concurrent.ConcurrentDictionary<(string, int), long>;
 
 namespace AdventOfCode._2024.Day21;
 
@@ -20,56 +20,38 @@ public class Solution : ISolution
         new KeyValuePair<Vector2, char>(Right, '>'),
     }.ToImmutableDictionary();
 
-    private static readonly Map Numpad = new[]
-    {
-        new KeyValuePair<Vector2, char>(new Vector2(0, 0), '7'),
-        new KeyValuePair<Vector2, char>(new Vector2(1, 0), '8'),
-        new KeyValuePair<Vector2, char>(new Vector2(2, 0), '9'),
-        new KeyValuePair<Vector2, char>(new Vector2(0, 1), '4'),
-        new KeyValuePair<Vector2, char>(new Vector2(1, 1), '5'),
-        new KeyValuePair<Vector2, char>(new Vector2(2, 1), '6'),
-        new KeyValuePair<Vector2, char>(new Vector2(0, 2), '1'),
-        new KeyValuePair<Vector2, char>(new Vector2(1, 2), '2'),
-        new KeyValuePair<Vector2, char>(new Vector2(2, 2), '3'),
-        new KeyValuePair<Vector2, char>(new Vector2(1, 3), '0'),
-        new KeyValuePair<Vector2, char>(new Vector2(2, 3), 'A')
-    }.ToImmutableDictionary();
+    private const string Numpad = "789\n456\n123\n 0A";
+    private const string Dirpad = " ^A\n<v>";
 
-    private static readonly Map Dirpad = new[]
-    {
-        new KeyValuePair<Vector2, char>(new Vector2(1, 0), '^'),
-        new KeyValuePair<Vector2, char>(new Vector2(2, 0), 'A'),
-        new KeyValuePair<Vector2, char>(new Vector2(0, 1), '<'),
-        new KeyValuePair<Vector2, char>(new Vector2(1, 1), 'v'),
-        new KeyValuePair<Vector2, char>(new Vector2(2, 1), '>'),
-    }.ToImmutableDictionary();
+    public object PartOne(string input) =>
+        Solve(input, 2, GetPadMap(ParseKeypad(Numpad)), GetPadMap(ParseKeypad(Dirpad)));
 
-    public object PartOne(string input)
-    {
-        var numpadMap = GetPadMap(Numpad);
-        var dirpadMap = GetPadMap(Dirpad);
-        input = "029A\n980A\n179A\n456A\n379A";
+    public object PartTwo(string input) =>
+        Solve(input, 25, GetPadMap(ParseKeypad(Numpad)), GetPadMap(ParseKeypad(Dirpad)));
 
-        
-        var total = 0;
-        foreach (var keys in input.Split("\n"))
-        {
-            var numpadKeySequence = BuildKeySequence(keys, 0, 'A', string.Empty, [], numpadMap);
-            var min = int.MaxValue;
-            
-            foreach (var sequence in numpadKeySequence)
+    private static long Solve(
+        string input,
+        int maxDepth,
+        Dictionary<(char, char), List<string>> numpadMap,
+        Dictionary<(char, char), List<string>> dirpadMap)
+        => input.Split('\n')
+            .Select(line => new
             {
-                min = Math.Min(min, FindShortestKeySequence(sequence, 2, new Cache(), dirpadMap));
-            }
+                Line = line,
+                Number = ParseLeadingNumber(line),
+                KeySequences = BuildKeySequence(line, 0, 'A', string.Empty, [], numpadMap)
+            })
+            .Select(item =>
+            {
+                var shortestPath = item.KeySequences
+                    .Select(sequence => FindShortestKeySequence(sequence, maxDepth, new Cache(), dirpadMap))
+                    .Min();
+                return item.Number * shortestPath;
+            })
+            .Sum();
 
-            var numPart = int.Parse(new string(keys.TakeWhile(char.IsDigit).ToArray()));
-            Console.WriteLine(min);
-            Console.WriteLine(numPart + " x " + min);
-            total += numPart * min;
-        }
-
-        return total;
-    }
+    private static int ParseLeadingNumber(string input) =>
+        int.Parse(new string(input.TakeWhile(char.IsDigit).ToArray()));
 
     private static List<string> BuildKeySequence(string keys, int index, char previousKey, string currentPath,
         List<string> result, Dictionary<(char, char), List<string>> keypad)
@@ -82,54 +64,57 @@ public class Solution : ISolution
 
         var currentKey = keys[index];
         foreach (var path in keypad[(previousKey, currentKey)])
-        {
             BuildKeySequence(keys, index + 1, currentKey, currentPath + path + 'A', result, keypad);
-        }
 
         return result;
     }
 
-    private int FindShortestKeySequence(string keys, int depth, Cache cache, Dictionary<(char, char), List<string>> keypad)
+    private static long FindShortestKeySequence(
+        string keys,
+        int depth,
+        Cache cache,
+        Dictionary<(char, char), List<string>> keypad)
     {
-        if (depth == 0)
-            return keys.Length;
-        if (cache.TryGetValue((keys, depth), out var cachedValue))
-            return cachedValue;
-        var subKeys = keys.Split('A');
-        var total = 0;
-        foreach (var subKey in subKeys)
+        if (depth == 0) return keys.Length;
+        if (cache.TryGetValue((keys, depth), out var cachedValue)) return cachedValue;
+
+        var subSequences = SplitOnA(keys);
+
+        var total = subSequences.Sum(subsequence =>
         {
-            var min = int.MaxValue;
-            foreach (var keySequence in BuildKeySequence(subKey, 0, 'A', string.Empty, [], keypad))
-            {
-                min = Math.Min(min, FindShortestKeySequence(keySequence, depth - 1, cache, keypad));
-            }
-            total += min;
-        }
+            var possiblePaths = BuildKeySequence(subsequence, 0, 'A', string.Empty, [], keypad);
+            return possiblePaths
+                .Select(path => FindShortestKeySequence(path, depth - 1, cache, keypad))
+                .Min();
+        });
 
         cache[(keys, depth)] = total;
         return total;
     }
 
+    private static List<string> SplitOnA(string input) => input.Split('A')
+        .Select((part, index) =>
+            index == input.Split('A').Length - 1
+                ? part
+                : part + "A")
+        .Where(s => !string.IsNullOrEmpty(s))
+        .ToList();
+
     private static Dictionary<(char, char), List<string>> GetPadMap(Map pad)
     {
         var padMap = new Dictionary<(char, char), List<string>>();
         foreach (var firstKey in pad)
+        foreach (var secondKey in pad)
+        foreach (var path in GetShortestKeyPaths(pad, firstKey.Key, secondKey.Key))
         {
-            foreach (var secondKey in pad)
+            if (!padMap.TryGetValue((firstKey.Value, secondKey.Value), out var list))
             {
-                foreach (var path in GetShortestKeyPaths(pad, firstKey.Key, secondKey.Key))
-                {
-                    if (!padMap.TryGetValue((firstKey.Value, secondKey.Value), out var list))
-                    {
-                        list = [];
-                        padMap[(firstKey.Value, secondKey.Value)] = list;
-                    }
-
-                    padMap[(firstKey.Value, secondKey.Value)]
-                        .Add(string.Join(string.Empty, path.Select(key => Directions[key]).ToList()));
-                }
+                list = [];
+                padMap[(firstKey.Value, secondKey.Value)] = list;
             }
+
+            padMap[(firstKey.Value, secondKey.Value)]
+                .Add(string.Join(string.Empty, path.Select(key => Directions[key]).ToList()));
         }
 
         return padMap;
@@ -169,4 +154,12 @@ public class Solution : ISolution
 
         return shortestPaths;
     }
+
+    private static Map ParseKeypad(string keypad) =>
+        keypad.Split('\n')
+            .SelectMany((line, y) =>
+                line.Select((c, x) => (x, y, c))
+                    .Where(t => !char.IsWhiteSpace(t.c) && t.c != '\0')
+                    .Select(t => new KeyValuePair<Vector2, char>(new Vector2(t.x, t.y), t.c)))
+            .ToImmutableDictionary();
 }
