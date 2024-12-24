@@ -17,6 +17,46 @@ public partial class Solution : ISolution
                 .Aggregate("", (current, output) => current + Simulate(output, circuit, wires)), 2);
     }
 
+    public object PartTwo(string input) => string.Join(",", Fix(ParseInput(input).circuit).OrderBy(output => output));
+
+    private IEnumerable<string?> Fix(Circuit circuit)
+    {
+        var cin = Output(circuit, "x00", "AND", "y00");
+        for (var i = 1; i < 45; i++)
+        {
+            var x = $"x{i:D2}";
+            var y = $"y{i:D2}";
+            var z = $"z{i:D2}";
+
+            var xor1 = Output(circuit, x, "XOR", y);
+            var and1 = Output(circuit, x, "AND", y);
+            var xor2 = Output(circuit, cin, "XOR", xor1);
+            var and2 = Output(circuit, cin, "AND", xor1);
+
+            if (xor2 == null && and2 == null)
+                return SwapAndFix(circuit, xor1, and1);
+
+            if (xor2 != z)
+                return SwapAndFix(circuit, z, xor2);
+
+            cin = Output(circuit, and1, "OR", and2);
+        }
+
+        return [];
+    }
+
+    private IEnumerable<string?> SwapAndFix(Circuit circuit, string? out1, string? out2)
+    {
+        (circuit[out1!], circuit[out2!]) = (circuit[out2!], circuit[out1!]);
+        return Fix(circuit).Concat([out1, out2]);
+    }
+
+    private static string? Output(Circuit circuit, string? x, string logicGate, string? y) =>
+        circuit.SingleOrDefault(pair =>
+            (pair.Value.FirstWire == x && pair.Value.LogicGate == logicGate && pair.Value.SecondWire == y) ||
+            (pair.Value.FirstWire == y && pair.Value.LogicGate == logicGate && pair.Value.SecondWire == x)
+        ).Key;
+
     private static int Simulate(string wire, Circuit circuit, Dictionary<string, int> wires)
     {
         if (wires.TryGetValue(wire, out var res))
