@@ -70,6 +70,7 @@ public class Solution : ISolution
                     targetIndex = j;
                     break;
                 }
+
                 if (blockToUpdate != null) break;
             }
 

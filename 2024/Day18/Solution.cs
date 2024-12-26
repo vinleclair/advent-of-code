@@ -44,12 +44,16 @@ public partial class Solution : ISolution
     private static Vector2 FirstCutOff(Vector2[] bytes)
     {
         var (low, high) = (0, bytes.Length);
-        
-        while (low < high - 1) {
+
+        while (low < high - 1)
+        {
             var mid = (low + high) / 2;
-            if (Dijkstra(bytes.Take(mid)) == null) {
+            if (Dijkstra(bytes.Take(mid)) == null)
+            {
                 high = mid;
-            } else {
+            }
+            else
+            {
                 low = mid;
             }
         }

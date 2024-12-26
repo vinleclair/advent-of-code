@@ -29,7 +29,8 @@ public class Solution : ISolution
     private static long[] Bananas(long initialNumber) =>
         GetSecretNumbers(initialNumber, 2000).Select(n => n % 10).ToArray();
 
-    private static long[] Difference(List<long> nums) => nums.Zip(nums.Skip(1)).Select(p => p.Second - p.First).ToArray();
+    private static long[] Difference(List<long> nums) =>
+        nums.Zip(nums.Skip(1)).Select(p => p.Second - p.First).ToArray();
 
     private static IEnumerable<long> GetSecretNumbers(long initialNumber, int numberCount)
     {

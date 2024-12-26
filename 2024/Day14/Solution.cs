@@ -39,9 +39,9 @@ public partial class Solution : ISolution
             map[robots[r].Position] += 1;
 
             if (s <= 100) continue;
-            
+
             if (!CheckForEasterEgg(map)) continue;
-            
+
             easterEggSecond = s;
             return map;
         }
