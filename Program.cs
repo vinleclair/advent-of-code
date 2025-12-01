@@ -89,10 +89,10 @@ internal static class Usage
         return """
                Advent of Code
                Usage: dotnet run [arguments]
-                all                   Solve everything
-                [year]                Solve the whole year
-                [year]/[day|all]      Solve the specified problem
-                today                 Shortcut to the above
+                all             Solve everything
+                [year]          Solve the whole year
+                [year]/[day]    Solve the specified day 
+                today           Shortcut to the above
                """;
     }
 }
