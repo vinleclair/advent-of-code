@@ -15,6 +15,14 @@ var tsolutions = Assembly.GetEntryAssembly()!.GetTypes()
     .ToArray();
 
 var action =
+    Command(args, Args("all"), m => { return () => Runner.RunAll(GetSolutions(tsolutions)); }) ??
+    Command(args, Args("[0-9]+"), m =>
+    {
+        var year = int.Parse(m[0]);
+        var tsolutionsSelected = tsolutions.Where(tsolver =>
+            SolutionExtensions.Year(tsolver) == year);
+        return () => Runner.RunAll(GetSolutions(tsolutionsSelected.ToArray()));
+    }) ??
     Command(args, Args("([0-9]+)/([Dd]ay)?([0-9]+)"), m =>
     {
         var year = int.Parse(m[0]);
@@ -24,21 +32,6 @@ var action =
             SolutionExtensions.Day(tsolution) == day);
         return () => Runner.RunAll(GetSolutions(tsolutionsSelected));
     }) ??
-    Command(args, Args("([0-9]+)/all"), m =>
-    {
-        var year = int.Parse(m[0]);
-        var tsolutionsSelected = tsolutions.Where(tsolution =>
-            SolutionExtensions.Year(tsolution) == year);
-        return () => Runner.RunAll(GetSolutions(tsolutionsSelected.ToArray()));
-    }) ??
-    Command(args, Args("[0-9]+"), m =>
-    {
-        var year = int.Parse(m[0]);
-        var tsolutionsSelected = tsolutions.Where(tsolver =>
-            SolutionExtensions.Year(tsolver) == year);
-        return () => Runner.RunAll(GetSolutions(tsolutionsSelected.ToArray()));
-    }) ??
-    Command(args, Args("all"), m => { return () => Runner.RunAll(GetSolutions(tsolutions)); }) ??
     Command(args,
         Args("today"), m =>
         {
@@ -96,10 +89,10 @@ internal static class Usage
         return """
                Advent of Code
                Usage: dotnet run [arguments]
-                [year]/[day|all]      Solve the specified problems
-                today                 Shortcut to the above
-                [year]                Solve the whole year
                 all                   Solve everything
+                [year]                Solve the whole year
+                [year]/[day|all]      Solve the specified problem
+                today                 Shortcut to the above
                """;
     }
 }
