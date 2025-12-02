@@ -1,37 +1,43 @@
+using System.Text.RegularExpressions;
+
 namespace AdventOfCode._2025.Day02;
 
-public class Solution : ISolution
+public partial class Solution : ISolution
 {
-    
-    public object PartOne(string input)
+    public object PartOne(string input) =>
+        CountMatchingIds(ParseInput(input), HasRepeatingPattern);
+
+    public object PartTwo(string input) =>
+        CountMatchingIds(ParseInput(input), HasMultipleRepeatingPattern);
+
+    private static long CountMatchingIds(
+        IEnumerable<(long firstId, long lastId)> ranges,
+        Func<Regex> predicate)
     {
-        long sum = 0;
-        
-        var ranges = ParseInput(input);
-        
-        foreach (var range in ranges)
-            for (var i = range.firstId; i <= range.lastId; i++)
-                if (HasMatchingHalves(i))
-                    sum += i;
-
-        return sum;
-    }
-
-    private static bool HasMatchingHalves(long number)
-    {
-        var s = Math.Abs(number).ToString();
-
-        if (s.Length % 2 != 0) return false;
-
-        var mid = s.Length / 2;
-        return s.AsSpan(0, mid).SequenceEqual(s.AsSpan(mid));
-    }
-
-
-    private static IEnumerable<(long firstId, long lastId)> ParseInput(string input) => input.Split(",")
-        .Select(range =>
+        long count = 0;
+        foreach (var (firstId, lastId) in ranges)
         {
-            var ids = range.Split("-");
-            return (long.Parse(ids[0]), long.Parse(ids[1]));
-        });
+            for (var id = firstId; id <= lastId; id++)
+            {
+                if (predicate.Invoke().IsMatch(id.ToString()))
+                    count += id;
+            }
+        }
+
+        return count;
+    }
+
+    private static IEnumerable<(long firstId, long lastId)> ParseInput(string input) =>
+        input.Split(",")
+            .Select(range =>
+            {
+                var ids = range.Split("-");
+                return (long.Parse(ids[0]), long.Parse(ids[1]));
+            });
+
+    [GeneratedRegex(@"^(\d+)\1$")]
+    private static partial Regex HasRepeatingPattern();
+
+    [GeneratedRegex(@"^(.+)\1+$")]
+    private static partial Regex HasMultipleRepeatingPattern();
 }
