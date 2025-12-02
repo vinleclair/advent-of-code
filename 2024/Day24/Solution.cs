@@ -81,8 +81,8 @@ public partial class Solution : ISolution
         var wires = blocks[0].Split("\n").Select(line => line.Split(": "))
             .Select(parts => new KeyValuePair<string, int>(parts[0], int.Parse(parts[1]))).ToDictionary();
 
-        var circuit = blocks[1].Split("\n").Select(l => Wire().Matches(l).Select(m => m.Value).ToArray()).Select(
-            parts =>
+        var circuit = blocks[1].Split("\n").Select(l => Wire().Matches(l).Select(m => m.Value).ToArray())
+            .Select(parts =>
                 new KeyValuePair<string, Gate>(parts[3],
                     new Gate(FirstWire: parts[0], LogicGate: parts[1], SecondWire: parts[2]))).ToDictionary();
 

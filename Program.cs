@@ -49,7 +49,7 @@ var action =
         }) ??
     (() => { Console.WriteLine(Usage.Get()); });
 
-action?.Invoke();
+action();
 
 return;
 
