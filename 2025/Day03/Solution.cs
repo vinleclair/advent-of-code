@@ -11,7 +11,7 @@ public class Solution : ISolution
         if (bank.Length < batteryCount)
             throw new InvalidOperationException($"Bank contains less than {batteryCount} batteries");
 
-        var joltage = string.Empty;
+        var joltage = 0L;
 
         while (batteryCount > 0)
         {
@@ -21,12 +21,12 @@ public class Solution : ISolution
                 if (bank[i] > bank[largestBatteryIndex])
                     largestBatteryIndex = i;
 
-            joltage += bank[largestBatteryIndex];
+            joltage = joltage * 10 + bank[largestBatteryIndex];
             bank = bank[(largestBatteryIndex + 1)..];
             batteryCount--;
         }
 
-        return long.Parse(joltage);
+        return joltage;
     }
 
     private static IEnumerable<int[]> ParseInput(string input) =>
