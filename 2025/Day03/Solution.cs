@@ -2,11 +2,11 @@ namespace AdventOfCode._2025.Day03;
 
 public class Solution : ISolution
 {
-    public object PartOne(string input) => ParseInput(input).Sum(bank => GetBatteries(bank, 2));
+    public object PartOne(string input) => ParseInput(input).Sum(bank => GetJoltage(bank, 2));
 
-    public object PartTwo(string input) => ParseInput(input).Sum(bank => GetBatteries(bank, 12));
+    public object PartTwo(string input) => ParseInput(input).Sum(bank => GetJoltage(bank, 12));
 
-    private static long GetBatteries(int[] bank, int batteryCount)
+    private static long GetJoltage(int[] bank, int batteryCount)
     {
         if (bank.Length < batteryCount)
             throw new InvalidOperationException($"Bank contains less than {batteryCount} batteries");
