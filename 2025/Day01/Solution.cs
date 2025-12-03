@@ -7,7 +7,7 @@ public class Solution : ISolution
 
     public object PartOne(string input)
     {
-        var sum = 0;
+        var password = 0;
         var position = StartPosition;
         var rotations = ParseInput(input);
 
@@ -18,15 +18,15 @@ public class Solution : ISolution
             position = (position + direction * rotation.distance) % TrackSize;
 
             if (position == 0)
-                sum++;
+                password++;
         }
 
-        return sum;
+        return password;
     }
 
     public object PartTwo(string input)
     {
-        var sum = 0;
+        var password = 0;
         var position = StartPosition;
         var rotations = ParseInput(input);
 
@@ -38,11 +38,11 @@ public class Solution : ISolution
             {
                 position += direction;
                 position %= TrackSize;
-                if (position == 0) sum++;
+                if (position == 0) password++;
             }
         }
 
-        return sum;
+        return password;
     }
 
     private static IEnumerable<(char direction, int distance)> ParseInput(string input) => input.Split("\n")
