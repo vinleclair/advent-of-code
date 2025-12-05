@@ -27,5 +27,5 @@ public partial class Solution : ISolution
     [GeneratedRegex(@"(mul\((\d{1,3}),(\d{1,3})\))|(don't\(\))|(do\(\))")]
     private static partial Regex MulDoDontRegex();
 
-    private static string[] ParseInput(string input) => input.Split("\n").ToArray();
+    private static string[] ParseInput(string input) => input.Split("\n");
 }
