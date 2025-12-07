@@ -30,9 +30,7 @@ public class Solution : ISolution
     {
         var (beam, splitters) = ParseInput(input);
 
-        var diagram = input.Split("\n");
-
-        var timelines = Enumerable.Repeat(1L, diagram[0].Length).ToArray();
+        var timelines = Enumerable.Repeat(1L, splitters.Length).ToArray();
 
         foreach (var line in splitters.Reverse())
         foreach (var splitter in line)
