@@ -4,60 +4,59 @@ public class Solution : ISolution
 {
     public object PartOne(string input)
     {
-        var (beamIndex, splitters) = ParseInput(input);
+        var (beam, splitters) = ParseInput(input);
 
-        var beamIndices = new List<List<int>>();
-
-        beamIndices.Add([beamIndex]);
+        var beams = new HashSet<int> { beam };
 
         var splitCount = 0;
 
-        foreach (var (splitter, index) in splitters.Select((splitter, index) => (splitter, index)))
+        foreach (var line in splitters)
         {
-            Console.WriteLine(string.Join(',', beamIndices[index]));
-            beamIndices.Add([]);
-            foreach (var beam in beamIndices[index])
+            foreach (var splitter in line)
             {
-                if (splitter.Contains(beam))
-                {
-                    splitCount++;
-                    beamIndices[index + 1].Add(beam - 1);
-                    beamIndices[index + 1].Add(beam + 1);
-                }
+                if (!beams.Contains(splitter)) continue;
 
-                if (!splitter.Contains(beam))
-                {
-                    beamIndices[index + 1].Add(beam);
-                }
+                beams.Remove(splitter);
+                beams.Add(splitter + 1);
+                beams.Add(splitter - 1);
+                splitCount++;
             }
-
-            beamIndices[index+1] = beamIndices[index+1].Distinct().ToList();
         }
 
         return splitCount;
     }
 
-    private static (int beamIndex, List<List<int>> splitters) ParseInput(string input)
+    public object PartTwo(string input)
     {
-        var beamIndex = -1;
-        var splitters = new List<List<int>>();
+        var (beam, splitters) = ParseInput(input);
 
-        foreach (var line in input.Split("\n"))
+        var diagram = input.Split("\n");
+
+        var timelines = Enumerable.Repeat(1L, diagram[0].Length).ToArray();
+
+        foreach (var line in splitters.Reverse())
+        foreach (var splitter in line)
+            timelines[splitter] = timelines[splitter - 1] + timelines[splitter + 1];
+
+        return timelines[beam];
+    }
+
+    private static (int beam, int[][] splitters) ParseInput(string input)
+    {
+        var beam = input.IndexOf('S');
+        var lines = input.Split("\n");
+        var splitters = new int[lines.Length][];
+
+        foreach (var (line, index) in input.Split("\n").Select((line, index) => (line, index)))
         {
-            if (line.Contains('S')) beamIndex = line.IndexOf('S');
-
-            if (!line.Contains('^')) continue;
-
             var indices = new List<int>();
 
             for (var i = line.IndexOf('^'); i > -1; i = line.IndexOf('^', i + 1))
-            {
                 indices.Add(i);
-            }
 
-            splitters.Add(indices);
+            splitters[index] = indices.ToArray();
         }
 
-        return (beamIndex, splitters);
+        return (beam, splitters);
     }
 }
