@@ -43,7 +43,7 @@ public class Solution : ISolution
         var lines = input.Split("\n");
         var splitters = new int[lines.Length][];
 
-        foreach (var (line, index) in input.Split("\n").Select((line, index) => (line, index)))
+        foreach (var (line, index) in lines.Select((line, index) => (line, index)))
         {
             var indices = new List<int>();
 
