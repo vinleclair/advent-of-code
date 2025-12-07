@@ -11,16 +11,14 @@ public class Solution : ISolution
         var splitCount = 0;
 
         foreach (var line in splitters)
+        foreach (var splitter in line)
         {
-            foreach (var splitter in line)
-            {
-                if (!beams.Contains(splitter)) continue;
+            if (!beams.Contains(splitter)) continue;
 
-                beams.Remove(splitter);
-                beams.Add(splitter + 1);
-                beams.Add(splitter - 1);
-                splitCount++;
-            }
+            beams.Remove(splitter);
+            beams.Add(splitter + 1);
+            beams.Add(splitter - 1);
+            splitCount++;
         }
 
         return splitCount;
