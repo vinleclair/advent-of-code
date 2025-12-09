@@ -6,50 +6,76 @@ public class Solution : ISolution
 {
     public object PartOne(string input)
     {
-        input =
-            "162,817,812\n57,618,57\n906,360,560\n592,479,940\n352,342,300\n466,668,158\n542,29,236\n431,825,988\n739,650,466\n52,470,668\n216,146,977\n819,987,18\n117,168,530\n805,96,715\n346,949,466\n970,615,88\n941,993,340\n862,61,35\n984,92,344\n425,690,689";
+        var (junctionBoxes, distances) = ParseInput(input);
 
-        var junctionBoxes = ParseInput(input);
-
-        var (a, b) = GetTwoClosestBoxes(junctionBoxes);
-        
-        Console.WriteLine(a);
-        Console.WriteLine(b);
-
-        return 0;
+        return ConnectJunctionBoxes(junctionBoxes, distances, out _, 1000)
+            .Select(c => c.Count)
+            .OrderByDescending(c => c)
+            .Take(3)
+            .Aggregate((a, b) => a * b);
     }
 
-    private static (Vector3, Vector3) GetTwoClosestBoxes(Vector3[] vectors)
+    public object PartTwo(string input)
     {
-        var maxDistance = float.MaxValue;
-        var closest1 = vectors[0];
-        var closest2 = vectors[1];
+        var (junctionBoxes, distances) = ParseInput(input);
 
-        for (var i = 0; i < vectors.Length - 1; i++)
+        ConnectJunctionBoxes(junctionBoxes, distances, out var lastConnection);
+
+        return (long)lastConnection.firstBox.X * (long)lastConnection.secondBox.X;
+    }
+
+    private static List<HashSet<Vector3>> ConnectJunctionBoxes(Vector3[] junctionBoxes,
+        Dictionary<float, (Vector3 firstBox, Vector3 secondBox)> distances,
+        out (Vector3 firstBox, Vector3 secondBox) lastConnection, int connections = 0)
+    {
+        lastConnection = (new Vector3(), new Vector3());
+
+        var circuits = junctionBoxes.Select(box => (HashSet<Vector3>)[box]).ToList();
+
+        var pairs = distances.OrderBy(x => x.Key).Select(p => p.Value);
+
+        if (connections > 0)
+            pairs = pairs.Take(connections);
+
+        foreach (var (firstBox, secondBox) in pairs)
         {
-            for (var j = i + 1; j < vectors.Length; j++)
+            var firstCircuit = circuits.First(c => c.Contains(firstBox));
+            var secondCircuit = circuits.First(c => c.Contains(secondBox));
+
+            if (firstCircuit == secondCircuit) continue;
+
+            firstCircuit.UnionWith(secondCircuit);
+            circuits.Remove(secondCircuit);
+
+            lastConnection = (firstBox, secondBox);
+
+            if (circuits.Count == 1)
+                break;
+        }
+
+        return circuits;
+    }
+
+    private static (Vector3[], Dictionary<float, (Vector3 firstBox, Vector3 secondBox)>) ParseInput(string input)
+    {
+        var junctionBoxes = input
+            .Split("\n")
+            .Select(line => line.Split(","))
+            .Select(coords => new Vector3(int.Parse(coords[0]), int.Parse(coords[1]), int.Parse(coords[2])))
+            .ToArray();
+
+        var distances = new Dictionary<float, (Vector3 firstBox, Vector3 secondBox)>();
+
+        for (var i = 0; i < junctionBoxes.Length - 1; i++)
+        {
+            var firstBox = junctionBoxes[i];
+            for (var j = i + 1; j < junctionBoxes.Length; j++)
             {
-                var distance = Vector3.Distance(vectors[i], vectors[j]);
-
-                if (!(distance < maxDistance)) continue;
-
-                maxDistance = distance;
-                closest1 = vectors[i];
-                closest2 = vectors[j];
+                var secondBox = junctionBoxes[j];
+                distances.TryAdd(Vector3.Distance(firstBox, secondBox), (firstBox, secondBox));
             }
         }
 
-        return (closest1, closest2);
-    }
-
-    private static Vector3[] ParseInput(string input)
-    {
-        var junctionBoxes = input.Split("\n").Select(line =>
-        {
-            var coords = line.Split(",").Select(int.Parse).ToArray();
-            return new Vector3(coords[0], coords[1], coords[2]);
-        }).ToArray();
-
-        return junctionBoxes;
+        return (junctionBoxes, distances);
     }
 }
