@@ -32,7 +32,7 @@ public static class Runner
             WriteLine(
                 diff > 1000 ? ConsoleColor.Red :
                 diff > 500 ? ConsoleColor.Yellow :
-                ConsoleColor.DarkGreen,
+                ConsoleColor.Green,
                 $"({diff:F3} ms)"
             );
             stopwatch.Restart();
