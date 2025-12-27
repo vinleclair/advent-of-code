@@ -6,7 +6,12 @@ public class Solution : ISolution
 {
     public object PartOne(string input) => ParseInput(input).Sum(machine => PushButtons(machine));
 
-    private static int PushButtons(Machine machine, int count = 1)
+    public object PartTwo(string input)
+    {
+        return 0;
+    }
+
+    private static int PushButtons(Machine machine, int count = 0)
     {
         if (count == machine.wiring.Length)
             return count;
@@ -63,7 +68,7 @@ public class Solution : ISolution
             var wiring = parts[1..^1].Select(p => p.Where(char.IsDigit).Select(c => int.Parse(c.ToString())).ToArray())
                 .ToArray();
 
-            var joltage = parts[^1][1..^1].Split(",").Select(int.Parse).ToArray();
+            var joltage = parts[^1].Trim('{', '}').Split(",").Select(int.Parse).ToArray();
 
             machines[index] = new Machine(lights, wiring, joltage);
         }
