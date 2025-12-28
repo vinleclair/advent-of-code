@@ -61,14 +61,13 @@ Action? Command(string[] args, string[] regexes, Func<string[], Action> parse)
     if (args.Length != regexes.Length)
         return null;
 
-    var matches = args.Zip(regexes, (arg, regex) => new Regex("^" + regex + "$").Match(arg));
-    var enumerable = matches.ToList();
-    if (!enumerable.All(match => match.Success))
+    var matches = args.Zip(regexes, (arg, regex) => new Regex("^" + regex + "$").Match(arg)).ToList();
+    if (!matches.All(match => match.Success))
         return null;
 
     try
     {
-        return parse(enumerable.SelectMany(m =>
+        return parse(matches.SelectMany(m =>
             m.Groups.Count > 1
                 ? m.Groups.Cast<Group>().Skip(1).Select(g => g.Value)
                 : [m.Value]
